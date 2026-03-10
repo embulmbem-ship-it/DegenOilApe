@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DEGEN OIL APE — FUEL THE PUMP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange: #FF6B00;
+    --orange2: #FFB300;
+    --green: #00FF88;
+    --red: #FF2244;
+    --dark: #080A06;
+    --darker: #040503;
+    --panel: rgba(10,15,8,0.85);
+    --glow-orange: 0 0 20px #FF6B00aa, 0 0 60px #FF6B0044;
+    --glow-green: 0 0 20px #00FF88aa, 0 0 60px #00FF8844;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--darker);
+    color: #ccc;
+    font-family: 'Rajdhani', sans-serif;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  /* SCANLINE OVERLAY */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* NOISE TEXTURE */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9998;
+    opacity: 0.4;
+  }
+
+  /* ── HERO ── */
+  #hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 2rem;
+  }
+
+  .bg-fire {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 100%, #FF6B0022 0%, transparent 70%),
+      radial-gradient(ellipse 50% 40% at 20% 80%, #FF220022 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 70%, #FFB30011 0%, transparent 60%),
+      linear-gradient(180deg, #080A06 0%, #0d1109 50%, #0a0c07 100%);
+    z-index: 0;
+  }
+
+  /* Animated grid floor */
+  .grid-floor {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 45%;
+    background-image:
+      linear-gradient(rgba(255,107,0,0.15) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,107,0,0.15) 1px, transparent 1px);
+    background-size: 60px 60px;
+    transform: perspective(500px) rotateX(60deg);
+    transform-origin: bottom;
+    z-index: 0;
+    animation: gridPulse 3s ease-in-out infinite alternate;
+  }
+
+  @keyframes gridPulse {
+    from { opacity: 0.4; }
+    to { opacity: 0.9; }
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    max-width: 900px;
+  }
+
+  /* Glitch badge */
+  .badge {
+    display: inline-block;
+    border: 1px solid var(--orange);
+    color: var(--orange);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+    padding: 4px 16px;
+    margin-bottom: 1.5rem;
+    position: relative;
+    animation: badgeBlink 4s infinite;
+  }
+  .badge::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px; right: -1px; bottom: -1px;
+    border: 1px solid var(--orange2);
+    opacity: 0;
+    animation: badgeBlink2 4s infinite 0.1s;
+  }
+  @keyframes badgeBlink { 0%,95%,100%{opacity:1} 96%,99%{opacity:0.3} }
+  @keyframes badgeBlink2 { 0%,95%,100%{opacity:0} 96%,99%{opacity:0.6} }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3.5rem, 10vw, 8rem);
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    color: var(--orange2);
+    text-shadow: var(--glow-orange);
+    position: relative;
+    animation: titleGlitch 8s infinite;
+  }
+
+  @keyframes titleGlitch {
+    0%,93%,100%{ transform: none; text-shadow: var(--glow-orange); }
+    94%{ transform: translate(-3px, 0) skewX(-2deg); text-shadow: 3px 0 var(--red), -3px 0 var(--green); }
+    95%{ transform: translate(3px, 0) skewX(2deg); text-shadow: -3px 0 var(--red), 3px 0 var(--green); }
+    96%{ transform: none; text-shadow: var(--glow-orange); }
+    97%{ transform: translate(-1px, 2px); }
+    98%{ transform: none; }
+  }
+
+  .hero-sub {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(1.5rem, 4vw, 3rem);
+    color: var(--green);
+    letter-spacing: 0.15em;
+    text-shadow: var(--glow-green);
+    margin-top: 0.3rem;
+  }
+
+  .hero-desc {
+    margin: 2rem auto;
+    max-width: 600px;
+    font-size: 1.1rem;
+    color: #88aa77;
+    line-height: 1.7;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+
+  /* APE IMAGE */
+  .ape-wrap {
+    margin: 1.5rem auto;
+    position: relative;
+    display: inline-block;
+  }
+  .ape-wrap img {
+    width: min(360px, 80vw);
+    border-radius: 50%;
+    border: 2px solid var(--orange);
+    box-shadow: var(--glow-orange), inset 0 0 40px rgba(255,107,0,0.2);
+    animation: apePulse 3s ease-in-out infinite;
+    display: block;
+  }
+  @keyframes apePulse {
+    0%,100%{ box-shadow: var(--glow-orange), inset 0 0 40px rgba(255,107,0,0.2); }
+    50%{ box-shadow: 0 0 40px #FF6B00cc, 0 0 100px #FF6B0066, inset 0 0 40px rgba(255,107,0,0.4); }
+  }
+
+  .ape-ring {
+    position: absolute;
+    inset: -12px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,179,0,0.3);
+    animation: ringRotate 8s linear infinite;
+  }
+  .ape-ring::before {
+    content: '';
+    position: absolute;
+    top: -3px; left: 50%;
+    width: 6px; height: 6px;
+    background: var(--orange2);
+    border-radius: 50%;
+    transform: translateX(-50%);
+    box-shadow: var(--glow-orange);
+  }
+  @keyframes ringRotate { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+  /* ── CA SECTION ── */
+  #ca-section {
+    position: relative;
+    z-index: 10;
+    padding: 5rem 2rem;
+    text-align: center;
+    background: linear-gradient(180deg, transparent, rgba(255,107,0,0.03) 50%, transparent);
+  }
+
+  .section-label {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--orange);
+    letter-spacing: 0.4em;
+    font-size: 0.7rem;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2rem, 5vw, 4rem);
+    color: #eee;
+    letter-spacing: 0.05em;
+    margin-bottom: 3rem;
+  }
+  .section-title span { color: var(--orange2); }
+
+  /* CA BOX */
+  .ca-container {
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .ca-box {
+    background: var(--panel);
+    border: 1px solid var(--orange);
+    padding: 2.5rem;
+    position: relative;
+    clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 24px 100%, 0 calc(100% - 24px));
+    box-shadow: var(--glow-orange);
+    animation: caPulse 4s ease-in-out infinite;
+  }
+
+  @keyframes caPulse {
+    0%,100%{ box-shadow: var(--glow-orange); }
+    50%{ box-shadow: 0 0 40px #FF6B00bb, 0 0 80px #FF6B0044; }
+  }
+
+  .ca-box::before {
+    content: 'CONTRACT ADDRESS';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--darker);
+    padding: 0 1rem;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--orange);
+    letter-spacing: 0.3em;
+  }
+
+  .ca-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--green);
+    letter-spacing: 0.3em;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .ca-label::before, .ca-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--green));
+  }
+  .ca-label::after { background: linear-gradient(270deg, transparent, var(--green)); }
+
+  .ca-address {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: clamp(0.75rem, 2.5vw, 1.1rem);
+    color: #fff;
+    letter-spacing: 0.08em;
+    word-break: break-all;
+    line-height: 1.6;
+    padding: 1rem;
+    background: rgba(0,255,136,0.05);
+    border: 1px solid rgba(0,255,136,0.15);
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ca-address::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0,255,136,0.1), transparent);
+    animation: scanAnim 3s linear infinite;
+  }
+  @keyframes scanAnim { to { left: 100%; } }
+
+  .copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, var(--orange), var(--orange2));
+    color: #000;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    letter-spacing: 0.15em;
+    padding: 12px 40px;
+    border: none;
+    cursor: pointer;
+    clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .copy-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.2);
+    transform: translateX(-100%);
+    transition: transform 0.3s;
+  }
+
+  .copy-btn:hover::before { transform: translateX(0); }
+  .copy-btn:hover { transform: scale(1.03); box-shadow: 0 0 30px #FF6B00aa; }
+  .copy-btn:active { transform: scale(0.97); }
+
+  .copied-msg {
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--green);
+    opacity: 0;
+    transition: opacity 0.3s;
+    white-space: nowrap;
+  }
+  .copied-msg.show { opacity: 1; }
+
+  /* ── TOKENOMICS ── */
+  #tokenomics {
+    padding: 5rem 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .stat-card {
+    background: var(--panel);
+    border: 1px solid rgba(255,107,0,0.3);
+    padding: 2rem 1.5rem;
+    text-align: center;
+    position: relative;
+    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+    transition: all 0.3s;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(255,107,0,0.08) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .stat-card:hover {
+    border-color: var(--orange);
+    box-shadow: var(--glow-orange);
+    transform: translateY(-4px);
+  }
+  .stat-card:hover::before { opacity: 1; }
+
+  .stat-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    color: var(--orange2);
+    text-shadow: var(--glow-orange);
+    display: block;
+  }
+
+  .stat-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: #556644;
+    letter-spacing: 0.2em;
+    margin-top: 0.5rem;
+    display: block;
+  }
+
+  /* ── HOW TO BUY ── */
+  #how-to-buy {
+    padding: 5rem 2rem;
+    text-align: center;
+    background: rgba(255,107,0,0.02);
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 2rem;
+    max-width: 1000px;
+    margin: 3rem auto 0;
+  }
+
+  .step {
+    position: relative;
+    padding: 2rem 1.5rem;
+    background: var(--panel);
+    border: 1px solid rgba(0,255,136,0.2);
+    text-align: left;
+    transition: all 0.3s;
+  }
+  .step:hover {
+    border-color: var(--green);
+    box-shadow: var(--glow-green);
+    transform: translateY(-4px);
+  }
+
+  .step-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 4rem;
+    color: rgba(255,107,0,0.15);
+    position: absolute;
+    top: 0.5rem;
+    right: 1rem;
+    line-height: 1;
+  }
+
+  .step-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .step h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    color: var(--green);
+    letter-spacing: 0.08em;
+    margin-bottom: 0.5rem;
+  }
+
+  .step p {
+    font-size: 0.95rem;
+    color: #778866;
+    line-height: 1.6;
+  }
+
+  /* ── SOCIAL LINKS ── */
+  #socials {
+    padding: 5rem 2rem;
+    text-align: center;
+  }
+
+  .social-links {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+
+  .social-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 32px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 0.12em;
+    text-decoration: none;
+    border: 1px solid;
+    transition: all 0.3s;
+    clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .social-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .social-btn:hover::before { opacity: 1; }
+  .social-btn:hover { transform: translateY(-3px); }
+
+  .social-btn.twitter {
+    color: #1DA1F2;
+    border-color: #1DA1F2;
+  }
+  .social-btn.twitter::before { background: rgba(29,161,242,0.1); }
+  .social-btn.twitter:hover { box-shadow: 0 0 20px #1DA1F244; }
+
+  .social-btn.telegram {
+    color: #2AABEE;
+    border-color: #2AABEE;
+  }
+  .social-btn.telegram::before { background: rgba(42,171,238,0.1); }
+  .social-btn.telegram:hover { box-shadow: 0 0 20px #2AABEE44; }
+
+  .social-btn.dex {
+    color: var(--green);
+    border-color: var(--green);
+  }
+  .social-btn.dex::before { background: rgba(0,255,136,0.1); }
+  .social-btn.dex:hover { box-shadow: var(--glow-green); }
+
+  /* ── TICKER ── */
+  .ticker-wrap {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(4,5,3,0.95);
+    border-top: 1px solid rgba(255,107,0,0.3);
+    padding: 8px 0;
+    overflow: hidden;
+    z-index: 1000;
+  }
+
+  .ticker-track {
+    display: flex;
+    gap: 4rem;
+    animation: tickerMove 20s linear infinite;
+    width: max-content;
+  }
+
+  .ticker-item {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--orange);
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .ticker-item .up { color: var(--green); }
+  .ticker-item .down { color: var(--red); }
+
+  @keyframes tickerMove {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(180deg, rgba(4,5,3,0.95) 0%, transparent 100%);
+    backdrop-filter: blur(4px);
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    color: var(--orange2);
+    letter-spacing: 0.1em;
+    text-shadow: var(--glow-orange);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    color: #667755;
+    text-decoration: none;
+    letter-spacing: 0.2em;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--orange); }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 3rem 2rem 6rem;
+    text-align: center;
+    border-top: 1px solid rgba(255,107,0,0.1);
+  }
+
+  footer p {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: #334422;
+    letter-spacing: 0.15em;
+    line-height: 2;
+  }
+
+  /* ── SCROLL REVEAL ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── CURSOR EFFECT ── */
+  .cursor-glow {
+    position: fixed;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255,107,0,0.06) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    z-index: 9997;
+    transition: opacity 0.3s;
+  }
+
+  @media (max-width: 600px) {
+    .nav-links { display: none; }
+    .ca-address { font-size: 0.65rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Cursor glow -->
+<div class="cursor-glow" id="cursorGlow"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">$OILAPE</div>
+  <ul class="nav-links">
+    <li><a href="#ca-section">CONTRACT</a></li>
+    <li><a href="#tokenomics">TOKENOMICS</a></li>
+    <li><a href="#how-to-buy">HOW TO BUY</a></li>
+    <li><a href="#socials">SOCIALS</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="bg-fire"></div>
+  <div class="grid-floor"></div>
+
+  <div class="hero-content">
+    <div class="badge">◈ SOLANA NETWORK ◈ DEGEN SEASON IS NOW ◈</div>
+
+    <div class="ape-wrap">
+      <div class="ape-ring"></div>
+      <img src="wmremove-transformed.png" alt="Degen Oil Ape" onerror="this.style.display='none'">
+    </div>
+
+    <h1 class="hero-title">DEGEN OIL APE</h1>
+    <div class="hero-sub">⚡ FUEL THE PUMP ⚡</div>
+
+    <p class="hero-desc">
+      The wildest ape on Solana is here to carry the barrel and pump the charts.
+      HODL tight. The fire is just getting started.
+    </p>
+
+    <a href="#ca-section" class="copy-btn" style="text-decoration:none; display:inline-flex; margin-top:1rem;">
+      ▼ &nbsp; GET THE CA
+    </a>
+  </div>
+</section>
+
+<!-- CA SECTION -->
+<section id="ca-section">
+  <p class="section-label">◈ SOLANA CONTRACT ◈</p>
+  <h2 class="section-title">CONTRACT <span>ADDRESS</span></h2>
+
+  <div class="ca-container reveal">
+    <div class="ca-box">
+      <div class="ca-label">VERIFIED ON SOLANA</div>
+      <div class="ca-address" id="ca-text">
+        PASTE_YOUR_CA_HERE_xxxxxxxxxxxxxxxxxxxxxxxxxxx
+      </div>
+      <div style="position:relative; display:inline-block;">
+        <button class="copy-btn" onclick="copyCA()">
+          ⎘ &nbsp; COPY CONTRACT
+        </button>
+        <div class="copied-msg" id="copied">✓ COPIED TO CLIPBOARD</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TOKENOMICS -->
+<section id="tokenomics">
+  <p class="section-label">◈ ON-CHAIN DATA ◈</p>
+  <h2 class="section-title" style="text-align:center;">TOKEN<span>OMICS</span></h2>
+
+  <div class="stats-grid">
+    <div class="stat-card reveal">
+      <span class="stat-value">1B</span>
+      <span class="stat-label">TOTAL SUPPLY</span>
+    </div>
+    <div class="stat-card reveal">
+      <span class="stat-value">0%</span>
+      <span class="stat-label">BUY TAX</span>
+    </div>
+    <div class="stat-card reveal">
+      <span class="stat-value">0%</span>
+      <span class="stat-label">SELL TAX</span>
+    </div>
+    <div class="stat-card reveal">
+      <span class="stat-value">🔥</span>
+      <span class="stat-label">LP BURNED</span>
+    </div>
+    <div class="stat-card reveal">
+      <span class="stat-value">🔒</span>
+      <span class="stat-label">CONTRACT RENOUNCED</span>
+    </div>
+    <div class="stat-card reveal">
+      <span class="stat-value">SOL</span>
+      <span class="stat-label">NETWORK</span>
+    </div>
+  </div>
+</section>
+
+<!-- HOW TO BUY -->
+<section id="how-to-buy">
+  <p class="section-label">◈ DEGEN GUIDE ◈</p>
+  <h2 class="section-title">HOW TO <span>BUY</span></h2>
+
+  <div class="steps">
+    <div class="step reveal">
+      <div class="step-num">01</div>
+      <div class="step-icon">👛</div>
+      <h3>GET A WALLET</h3>
+      <p>Download Phantom or Solflare wallet. Create your wallet and secure your seed phrase.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">02</div>
+      <div class="step-icon">⚡</div>
+      <h3>GET SOL</h3>
+      <p>Buy SOL from any CEX (Binance, Coinbase) and send it to your Phantom wallet.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">03</div>
+      <div class="step-icon">🔄</div>
+      <h3>SWAP ON RAYDIUM</h3>
+      <p>Go to Raydium or Jupiter. Paste the CA above and swap SOL for $OILAPE.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">04</div>
+      <div class="step-icon">🦍</div>
+      <h3>HODL & PUMP</h3>
+      <p>You're now a Degen Oil Ape. HODL tight and watch the barrel fill up. 🔥</p>
+    </div>
+  </div>
+</section>
+
+<!-- SOCIALS -->
+<section id="socials">
+  <p class="section-label">◈ JOIN THE PACK ◈</p>
+  <h2 class="section-title">COMMUNITY <span>LINKS</span></h2>
+
+  <div class="social-links">
+    <a href="#" class="social-btn twitter">𝕏 &nbsp; TWITTER</a>
+    <a href="#" class="social-btn telegram">✈ &nbsp; TELEGRAM</a>
+    <a href="#" class="social-btn dex">⬡ &nbsp; DEXSCREENER</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2025 DEGEN OIL APE — $OILAPE — SOLANA NETWORK</p>
+  <p>THIS IS A MEME COIN. NO FINANCIAL ADVICE. DYOR. ALWAYS TRADE RESPONSIBLY.</p>
+  <p style="margin-top:1rem; color:#223311;">◈ FUEL THE PUMP ◈ HODL & PUMP ◈ DEGEN OIL APE ◈</p>
+</footer>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-track" id="ticker">
+    <span class="ticker-item">$OILAPE <span class="up">▲ +420.69%</span></span>
+    <span class="ticker-item">$SOL <span class="up">▲ +5.2%</span></span>
+    <span class="ticker-item">$BTC <span class="up">▲ +2.1%</span></span>
+    <span class="ticker-item">$ETH <span class="down">▼ -0.8%</span></span>
+    <span class="ticker-item">VOLUME: $6.9M</span>
+    <span class="ticker-item">HOLDERS: 4,200+</span>
+    <span class="ticker-item">LP: BURNED 🔥</span>
+    <span class="ticker-item">$OILAPE <span class="up">▲ +420.69%</span></span>
+    <span class="ticker-item">$SOL <span class="up">▲ +5.2%</span></span>
+    <span class="ticker-item">$BTC <span class="up">▲ +2.1%</span></span>
+    <span class="ticker-item">$ETH <span class="down">▼ -0.8%</span></span>
+    <span class="ticker-item">VOLUME: $6.9M</span>
+    <span class="ticker-item">HOLDERS: 4,200+</span>
+    <span class="ticker-item">LP: BURNED 🔥</span>
+  </div>
+</div>
+
+<script>
+// Cursor glow
+const glow = document.getElementById('cursorGlow');
+document.addEventListener('mousemove', e => {
+  glow.style.left = e.clientX + 'px';
+  glow.style.top = e.clientY + 'px';
+});
+
+// Copy CA
+function copyCA() {
+  const ca = document.getElementById('ca-text').textContent.trim();
+  navigator.clipboard.writeText(ca).then(() => {
+    const msg = document.getElementById('copied');
+    msg.classList.add('show');
+    setTimeout(() => msg.classList.remove('show'), 2000);
+  });
+}
+
+// Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), i * 100);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Glitch title randomly
+const title = document.querySelector('.hero-title');
+setInterval(() => {
+  if (Math.random() > 0.7) {
+    title.style.filter = 'hue-rotate(180deg)';
+    setTimeout(() => title.style.filter = '', 100);
+  }
+}, 2000);
+</script>
+</body>
+</html>
